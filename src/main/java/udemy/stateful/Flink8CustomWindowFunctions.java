@@ -1,6 +1,6 @@
 package udemy.stateful;
 
-import org.apache.flink.api.java.tuple.Tuple;
+import org.apache.flink.api.java.tuple.Tuple1;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.WindowedStream;
@@ -25,9 +25,9 @@ public class Flink8CustomWindowFunctions {
         DataStream<String> dataStream = StreamUtil.getDataStream(env, params);
 
         // 1) Create a custom window of type GlobalWindow, with key type Tuple, and element type CourseCount2
-        WindowedStream<Pojos.CourseCount2, Tuple, GlobalWindow> windowedStream = dataStream
+        WindowedStream<Pojos.CourseCount2, Tuple1<Integer>, GlobalWindow> windowedStream = dataStream
                 .map(new Pojos.ParseRow2())
-                .keyBy("staticKey")
+                .keyBy(Pojos.CourseCount2::getStaticKey)
                 // Gives the reference count: Out of the last 5 elements, which courses have been booked how many times
                 .countWindow(5);
 
@@ -43,12 +43,12 @@ public class Flink8CustomWindowFunctions {
         -> Within a window, collects all courses in the US and counts their occurrences
         CourseCount2: Input data type
         Map<String, Integer>: Output data type (course name & # times course occurred)
-        Tuple: Key data type
+        Tuple1: Key data type (mandatory key type inherits from Tuple)
         Global window: Window type
      */
     public static class CollectUS implements WindowFunction<Pojos.CourseCount2, Map<String, Integer>,
-            Tuple, GlobalWindow>{
-        public void apply(Tuple tuple,
+            Tuple1<Integer>, GlobalWindow>{
+        public void apply(Tuple1<Integer> tuple,
                           GlobalWindow globalWindow,
                           Iterable<Pojos.CourseCount2> iterable,
                           Collector<Map<String, Integer>> collector

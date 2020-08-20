@@ -2,6 +2,8 @@ package udemy.utils;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple;
+import org.apache.flink.api.java.tuple.Tuple1;
+import org.apache.flink.api.java.tuple.Tuple2;
 
 public class Pojos {
 
@@ -37,10 +39,15 @@ public class Pojos {
 
     public static class CourseCount2 {
         // used to group all events into one window (countWindows can only be applied to keyed streams / no windowAll   )
-        public Integer staticKey = 1;
+        public Tuple1<Integer> staticKey = new Tuple1<>(1);
+        ////public Integer staticKey = 1;
         public String course;
         public String country;
         public Integer count;
+
+        public Tuple1<Integer> getStaticKey() {
+            return staticKey;
+        }
 
         public CourseCount2(){
         }
