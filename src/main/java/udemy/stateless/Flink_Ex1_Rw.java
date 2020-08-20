@@ -14,7 +14,7 @@ import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 // --input <someFile.txt>  or --host localhost --port 8081 (socket (nc -l 8081))
-public class Flink1Rw {
+public class Flink_Ex1_Rw {
 
     public static void main(String[] args) throws Exception {
 

@@ -64,36 +64,4 @@ public class Pojos {
 
     }
 
-    // Produces a POJO from a comma delimited element (flat file: row)
-    public static class ParseRow1 implements MapFunction<String, CourseCount1> {
-        public CourseCount1 map(String input) throws Exception {
-            try {
-                String[] rowData = input.split(",");
-                return new CourseCount1(
-                        rowData[0].trim(),
-                        Integer.parseInt(rowData[1].trim())
-                );
-            } catch (Exception e) {
-                System.out.println("Exception in ParseRow");
-            }
-            return null;
-        }
-    }
-
-    public static class ParseRow2 implements MapFunction<String, CourseCount2> {
-        public CourseCount2 map(String input) throws Exception {
-            try {
-                String[] rowData = input.split(",");
-                return new CourseCount2(
-                        rowData[0].trim(),
-                        rowData[1].trim(),
-                        Integer.parseInt(rowData[2].trim())
-                );
-            } catch (Exception e) {
-                System.out.println("Exception in ParseRow");
-            }
-            return null;
-        }
-    }
-
 }

@@ -1,13 +1,15 @@
 package udemy.stateless;
 
-import org.apache.flink.api.common.functions.FilterFunction;
+import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+import org.apache.flink.util.Collector;
+import udemy.transformations.ExtractSpecialities;
 import udemy.utils.StreamUtil;
 
-public class Flink2Chaining {
+public class Flink_Ex3_4_MapFlatMap {
 
     public static void main( String[] args ) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -15,29 +17,21 @@ public class Flink2Chaining {
         env.getConfig().setGlobalJobParameters(params);
 
         DataStream<String> outStream = StreamUtil.getDataStream(env, params)
-                .filter(new Filter())
-                .map(new CleanString());
+                .map(new ExtractSpecialities())
+                .flatMap(new SplitSpecial());
 
         outStream.print();
 
-        env.execute("Filter");
+        env.execute("map and flatmap");
 
     }
 
-    public static class Filter implements FilterFunction<String> {
-        public boolean filter(String input) {
-            try {
-                Double.parseDouble(input.trim());
-                return false;
-            }   catch (Exception ignored) {
+    public static class SplitSpecial implements FlatMapFunction<String, String> {
+        public void flatMap(String input, Collector<String> out) {
+            String[] specialities = input.split("\t");
+            for (String speciality : specialities) {
+                out.collect(speciality.trim());
             }
-            return input.length() > 3;
-        }
-    }
-
-    public static class CleanString implements MapFunction<String, String> {
-        public String map(String input) throws Exception {
-            return input.trim().toLowerCase();
         }
     }
 
