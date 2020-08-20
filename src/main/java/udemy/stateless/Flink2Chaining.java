@@ -14,9 +14,7 @@ public class Flink2Chaining {
         final ParameterTool params = ParameterTool.fromArgs(args);
         env.getConfig().setGlobalJobParameters(params);
 
-        DataStream<String> dataStream = StreamUtil.getDataStream(env, params);
-
-        DataStream<String> outStream = dataStream
+        DataStream<String> outStream = StreamUtil.getDataStream(env, params)
                 .filter(new Filter())
                 .map(new CleanString());
 

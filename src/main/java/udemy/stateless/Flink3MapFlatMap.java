@@ -16,9 +16,7 @@ public class Flink3MapFlatMap {
         final ParameterTool params = ParameterTool.fromArgs(args);
         env.getConfig().setGlobalJobParameters(params);
 
-        DataStream<String> dataStream = StreamUtil.getDataStream(env, params);
-
-        DataStream<String> outStream = dataStream
+        DataStream<String> outStream = StreamUtil.getDataStream(env, params)
                 .map(new ExtractSpecialities())
                 .flatMap(new SplitSpecial());
 

@@ -25,15 +25,17 @@ public class Flink5Windows {
 
         /*
         // 1) Unkeyed stream
-        DataStream<Integer> outStream1 = dataStream
+        DataStream<Integer> windowedStream1 = dataStream
                 .map(Integer::parseInt)
+                // Window Assigner
                 .windowAll(TumblingProcessingTimeWindows.of(Time.seconds(10)))
+                // Evaluation function
                 .sum(0);
 
          */
 
         // 2) Keyed stream w/ Tumbling window: Window applies to each key separately (requires tuples)
-        DataStream<Tuple2<String, Integer>> outStream2 = dataStream
+        DataStream<Tuple2<String, Integer>> windowedStream2 = dataStream
                 .map(new ParseRow())
                 .keyBy(tuple -> tuple.f0)
                 // TumblingProcessingTimeWindows is a Window Assigner
@@ -41,7 +43,7 @@ public class Flink5Windows {
                 .sum(1);
 
         // 3) Keyed stream w/ Tumbling window: Window applies to each key separately
-        DataStream<Tuple2<String, Integer>> outStream3 = dataStream
+        DataStream<Tuple2<String, Integer>> windowedStream3 = dataStream
                 .map(new ParseRow())
                 .keyBy(tuple -> tuple.f0)
                 // Two parameters: 1) window size 2) Sliding interval: 1 - 30, 10 - 40, 20 - 50
@@ -58,9 +60,9 @@ public class Flink5Windows {
                 });
          */
 
-        outStream3.print();
+        windowedStream3.print();
 
-        env.execute("map and flatmap");
+        env.execute("Windows");
     }
 
     public static class ParseRow implements MapFunction<String, Tuple2<String, Integer>> {

@@ -44,7 +44,7 @@ public class    Flink4StreamOfTuples {
 
         outStream3.print();
 
-        env.execute("map and flatmap");
+        env.execute("Tuple stream");
     }
 
     public static class ParseRow implements MapFunction<String, Tuple3<String, Double, Integer>> {

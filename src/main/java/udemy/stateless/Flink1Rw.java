@@ -13,7 +13,7 @@ import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.
 import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
-// --input <someFile.txt> or socket (nc -l 8081)
+// --input <someFile.txt>  or --host localhost --port 8081 (socket (nc -l 8081))
 public class Flink1Rw {
 
     public static void main(String[] args) throws Exception {
