@@ -8,26 +8,27 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.windows.GlobalWindow;
 import org.apache.flink.util.Collector;
-import udemy.utils.Pojos;
+import udemy.transformations.ParseRow;
+import udemy.transformations.ParseRow.ParseRow3;
+import udemy.utils.Pojos.CourseCount2;
 import udemy.utils.StreamUtil;
 
 import java.util.HashMap;
 import java.util.Map;
 
 // input: course(String), country (String), timestamp (any input)
-public class Flink8CustomWindowFunctions {
+public class Flink_Ex13_CustomWindowFunctions {
 
     public static void main( String[] args ) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         final ParameterTool params = ParameterTool.fromArgs(args);
         env.getConfig().setGlobalJobParameters(params);
 
-        DataStream<String> dataStream = StreamUtil.getDataStream(env, params);
-
         // 1) Create a custom window of type GlobalWindow, with key type Tuple, and element type CourseCount2
-        WindowedStream<Pojos.CourseCount2, Tuple1<Integer>, GlobalWindow> windowedStream = dataStream
-                .map(new Pojos.ParseRow2())
-                .keyBy(Pojos.CourseCount2::getStaticKey)
+        WindowedStream<CourseCount2, Tuple1<Integer>, GlobalWindow> windowedStream = StreamUtil
+                .getDataStream(env, params)
+                .map(new ParseRow3())
+                .keyBy(CourseCount2::getStaticKey)
                 // Gives the reference count: Out of the last 5 elements, which courses have been booked how many times
                 .countWindow(5);
 
@@ -46,15 +47,15 @@ public class Flink8CustomWindowFunctions {
         Tuple1: Key data type (mandatory key type inherits from Tuple)
         Global window: Window type
      */
-    public static class CollectUS implements WindowFunction<Pojos.CourseCount2, Map<String, Integer>,
+    public static class CollectUS implements WindowFunction<CourseCount2, Map<String, Integer>,
             Tuple1<Integer>, GlobalWindow>{
         public void apply(Tuple1<Integer> tuple,
                           GlobalWindow globalWindow,
-                          Iterable<Pojos.CourseCount2> iterable,
+                          Iterable<CourseCount2> iterable,
                           Collector<Map<String, Integer>> collector
                           ) throws Exception {
             Map<String, Integer> output = new HashMap<>();
-            for(Pojos.CourseCount2 signUp : iterable) {
+            for(CourseCount2 signUp : iterable) {
                 // Evictor
                 if(signUp.country.equals("US")) {
                     // Add or append to Map

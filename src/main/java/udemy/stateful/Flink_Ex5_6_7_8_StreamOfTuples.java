@@ -14,7 +14,7 @@ import udemy.utils.StreamUtil;
 
 import java.util.logging.Logger;
 
-public class    Flink4StreamOfTuples {
+public class Flink_Ex5_6_7_8_StreamOfTuples {
 
     public static void main( String[] args ) throws Exception {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
