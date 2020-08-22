@@ -33,14 +33,14 @@ public class Flink_Ex17_ValueState {
         final ParameterTool params = ParameterTool.fromArgs(args);
         env.getConfig().setGlobalJobParameters(params);
 
-        DataStream<String> wordCountStream = StreamUtil.getDataStream(env, params)
+        DataStream<String> outStream = StreamUtil.getDataStream(env, params)
                 // Create tuple i.o.t. create KeyedStream afterwards
                 .map(new WordToTuple())
                 .keyBy(tuple -> tuple.f0)
                 // Apply a STATEFUL flatMap operation, which is capable of maintaining state
                 .flatMap(new collectTotalWordCount());
 
-        wordCountStream.print();
+        outStream.print();
 
         env.execute("Custom Source and Sink");
     }

@@ -2,8 +2,8 @@ package udemy.stateful;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.common.state.ListState;
-import org.apache.flink.api.common.state.ListStateDescriptor;
+import org.apache.flink.api.common.state.ReducingState;
+import org.apache.flink.api.common.state.ReducingStateDescriptor;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.configuration.Configuration;
@@ -14,11 +14,11 @@ import udemy.utils.StreamUtil;
 
 /* Another type of state object
     - Input: Stream of words, e.g. a, b, c, print. Same use case as in Ex17
-    - State in this case: distinct list of words encountered so far
+    - State in this case: total count of words encountered so far (accumulate all values in a single value: reduce)
     - Whenever list is needed to be maintained, it is done via list state object
     - Parameters: -host localhost --port 8081
  */
-public class Flink_Ex18_ListState {
+public class Flink_Ex19_ReducingState {
 
     public static void main(String[] args) throws Exception {
 
@@ -31,7 +31,7 @@ public class Flink_Ex18_ListState {
                 .map(new WordToTuple())
                 .keyBy(tuple -> tuple.f0)
                 // Apply a STATEFUL flatMap operation, which is capable of maintaining state
-                .flatMap(new collectDistinctWords());
+                .flatMap(new collectTotalWordCount());
 
         outStream.print();
 
@@ -46,46 +46,37 @@ public class Flink_Ex18_ListState {
     }
 
     // Use RichFlatMapFunction in stead of regular FlatMapFunction
-    public static class collectDistinctWords extends RichFlatMapFunction<Tuple2<Integer, String>, String> {
+    public static class collectTotalWordCount extends RichFlatMapFunction<Tuple2<Integer, String>, String> {
         // Use value state whenever you have a single object to represent state
         // Store distinct list of words in this object
-        private transient ListState<String> distinctWordList;
+        private transient ReducingState<Integer> totalCountState;
 
         // Update and clear state object
         public void flatMap(Tuple2<Integer, String> input, Collector<String> output) throws Exception {
-            // Get the current value of the state
-            Iterable<String> currentWordList = distinctWordList.get();
-            boolean oldWord = false;
             if (input.f1.equals("print")) {
                 // Print out current state
-                output.collect(distinctWordList.toString());
-                distinctWordList.clear();
+                output.collect(totalCountState.get().toString());
+                totalCountState.clear();
             }
             // Run through in case word is sth other than print
-            else {
-                for (String word : currentWordList) {
-                    if (input.f1.equals(word)) {
-                        oldWord = true;
-                        break;
-                    }
-                }
-                if (!oldWord)
-                    distinctWordList.add(input.f1);
-            }
+            else
+                totalCountState.add(1);
         }
 
         // Each FlatMap function has a method "open", which initializes the state object
         @Override
         public void open(Configuration config) {
             // Will be used later on to create value state object
-            ListStateDescriptor<String> descriptor = new ListStateDescriptor<>(
+            ReducingStateDescriptor<Integer> descriptor = new ReducingStateDescriptor<>(
                     // State name
-                    "wordList",
+                    "totalCount",
+                    // Reduce function
+                    Integer::sum,
                     // Type information of object which is held in the value state
-                    String.class
+                    Integer.class
             );
             // Get actual value state object (initialize)
-            distinctWordList = getRuntimeContext().getListState(descriptor);
+            totalCountState = getRuntimeContext().getReducingState(descriptor);
         }
     }
 
