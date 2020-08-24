@@ -53,4 +53,19 @@ public class ParseRow {
         }
     }
 
+    public static class ParseRow4 implements MapFunction<String, Tuple2<String, Double>> {
+        public Tuple2<String, Double> map(String input) throws Exception {
+            try {
+                String[] rowData = input.split(",");
+                return new Tuple2<>(
+                        rowData[0].trim(),
+                        Double.parseDouble(rowData[1].trim())
+                );
+            } catch (Exception e) {
+                System.out.println("Exception in ParseRow");
+            }
+            return null;
+        }
+    }
+
 }

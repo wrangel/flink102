@@ -2,13 +2,13 @@ package udemy.stateful;
 
 import org.apache.flink.api.common.functions.JoinFunction;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.windowing.assigners.TumblingProcessingTimeWindows;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import udemy.transformations.StreamKeySelectors.StreamKeySelector1;
 import udemy.utils.StreamUtil;
 
 /* Join two keyed streams based on their keys
@@ -32,7 +32,7 @@ public class Flink_Ex22_JoiningStreams {
         // Union stream
         DataStream<Tuple3<String, Double, Double>> joinedStream = stream1.join(stream2)
                 // Specify keys in both streams
-                .where(new StreamKeySelector()).equalTo(new StreamKeySelector())
+                .where(new StreamKeySelector1()).equalTo(new StreamKeySelector1())
                 // Define window within which matching keys are to be found in entities
                 .window(TumblingProcessingTimeWindows.of(Time.seconds(10)))
                 // How to combine each pair of matching tuples
@@ -62,13 +62,6 @@ public class Flink_Ex22_JoiningStreams {
                 product = product * Double.parseDouble(num);
             }
             return Tuple3.of(input, "Product", product);
-        }
-    }
-
-    // Select the key out of a tuple
-    public static class StreamKeySelector implements KeySelector<Tuple3<String, String, Double>, String> {
-        public String getKey(Tuple3<String, String, Double> value) {
-            return value.f0;
         }
     }
 
