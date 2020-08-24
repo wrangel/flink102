@@ -5,7 +5,7 @@ import org.apache.flink.api.scala.{DataSet, ExecutionEnvironment, createTypeInfo
 
 /* input: course (String) (BLANK) course length (String
  */
-class Flink_Ex29_30_ML extends App {
+class Flink_Ex29_ML extends App {
   val env: ExecutionEnvironment = ExecutionEnvironment.getExecutionEnvironment
   val params = ParameterTool.fromArgs(args)
   env.getConfig.setGlobalJobParameters(params)
