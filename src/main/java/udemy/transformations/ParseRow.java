@@ -2,6 +2,7 @@ package udemy.transformations;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.functions.co.CoMapFunction;
 import udemy.utils.Pojos;
 
 public class ParseRow {
@@ -65,6 +66,21 @@ public class ParseRow {
                 System.out.println("Exception in ParseRow");
             }
             return null;
+        }
+    }
+
+    /* Template parameter: Data type of first and second input streams, data type of output
+        Contains two mapping functions, since every stream needs its own, and origin is trackable
+    */
+    public static class ParseRow5 implements CoMapFunction<String, String, Tuple2<String, Double>> {
+        public Tuple2<String, Double> map1(String s) throws Exception {
+            String[] data = s.split(" ");
+            return Tuple2.of(data[0].trim(), Double.parseDouble(data[1].trim()));
+        }
+
+        public Tuple2<String, Double> map2(String s) throws Exception {
+            String[] data = s.split(" ");
+            return Tuple2.of(data[0].trim(), Double.parseDouble(data[1].trim()));
         }
     }
 
