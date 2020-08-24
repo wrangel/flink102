@@ -2,6 +2,7 @@ package udemy.transformations;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.functions.co.CoMapFunction;
 import udemy.utils.Pojos;
 
@@ -81,6 +82,22 @@ public class ParseRow {
         public Tuple2<String, Double> map2(String s) throws Exception {
             String[] data = s.split(" ");
             return Tuple2.of(data[0].trim(), Double.parseDouble(data[1].trim()));
+        }
+    }
+
+    public static class ParseRow6 implements MapFunction<String, Tuple3<String, Double, Integer>> {
+        public Tuple3<String, Double, Integer> map(String input) throws Exception {
+            try {
+                String[] rowData = input.split(",");
+                return new Tuple3<>(
+                        rowData[2].trim(),
+                        Double.parseDouble(rowData[1]),
+                        1
+                );
+            } catch (Exception e) {
+                System.out.println("Exception in ParseRow");
+            }
+            return null;
         }
     }
 

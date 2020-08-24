@@ -2,17 +2,15 @@ package udemy.stateful;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
-import org.apache.flink.api.common.functions.ReduceFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.util.Collector;
-import udemy.transformations.ExtractSpecialities;
+import udemy.transformations.Average;
+import udemy.transformations.ParseRow;
+import udemy.transformations.SumAndCounts;
 import udemy.utils.StreamUtil;
-
-import java.util.logging.Logger;
 
 public class Flink_Ex5_6_7_8_StreamOfTuples {
 
@@ -37,30 +35,14 @@ public class Flink_Ex5_6_7_8_StreamOfTuples {
          */
 
         DataStream<Tuple2<String, Double>> outStream3 = dataStream
-                .map(new ParseRow())
+                .map(new ParseRow.ParseRow6())
                 .keyBy(tuple -> tuple.f0)
-                .reduce(new SumAndCount())
+                .reduce(new SumAndCounts.SumAndCount1())
                 .map(new Average());
 
         outStream3.print();
 
         env.execute("Tuple stream");
-    }
-
-    public static class ParseRow implements MapFunction<String, Tuple3<String, Double, Integer>> {
-        public Tuple3<String, Double, Integer> map(String input) throws Exception {
-            try {
-                String[] rowData = input.split(",");
-                return new Tuple3<>(
-                        rowData[2].trim(),
-                        Double.parseDouble(rowData[1]),
-                        1
-                );
-            } catch (Exception e) {
-                System.out.println("Exception in ParseRow");
-            }
-            return null;
-        }
     }
 
     public static class SplitSpecial implements FlatMapFunction<String, Tuple2<String, Integer>> {
@@ -88,29 +70,6 @@ public class Flink_Ex5_6_7_8_StreamOfTuples {
                 System.out.println("Exception in RowSplitter");
             }
             return null;
-        }
-    }
-
-    // Course, length, area. Objective: Average course length in each area
-    public static class SumAndCount implements ReduceFunction<Tuple3<String, Double, Integer>> {
-        public Tuple3<String, Double, Integer> reduce (
-                Tuple3<String, Double, Integer> cumulative,
-                Tuple3<String, Double, Integer> input
-        ) {
-            return new Tuple3<>(
-                    input.f0,
-                    cumulative.f1 + input.f1,
-                    cumulative.f2 + 1
-            );
-        }
-    }
-
-    public static class Average implements MapFunction<Tuple3<String, Double, Integer>, Tuple2<String, Double>> {
-        public Tuple2<String, Double> map(Tuple3<String, Double, Integer> input) {
-            return new Tuple2<>(
-                    input.f0,
-                    input.f1 / input.f2
-            );
         }
     }
 
