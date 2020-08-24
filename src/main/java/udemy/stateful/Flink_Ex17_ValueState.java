@@ -42,7 +42,7 @@ public class Flink_Ex17_ValueState {
 
         outStream.print();
 
-        env.execute("Custom Source and Sink");
+        env.execute("Value state");
     }
 
     // Creates a tuple of static key (1) and word (Workaround to get a Keyed Stream)

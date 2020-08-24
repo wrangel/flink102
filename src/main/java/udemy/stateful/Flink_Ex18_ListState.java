@@ -35,7 +35,7 @@ public class Flink_Ex18_ListState {
 
         outStream.print();
 
-        env.execute("Custom Source and Sink");
+        env.execute("List state");
     }
 
     // Creates a tuple of static key (1) and word (Workaround to get a Keyed Stream)

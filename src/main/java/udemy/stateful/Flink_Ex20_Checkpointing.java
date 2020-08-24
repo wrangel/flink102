@@ -57,7 +57,7 @@ public class Flink_Ex20_Checkpointing {
 
         outStream.print();
 
-        env.execute("Custom Source and Sink");
+        env.execute("Checkpointing");
     }
 
     // Creates a tuple of static key (1) and word (Workaround to get a Keyed Stream)
