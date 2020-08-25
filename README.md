@@ -1,1 +1,1 @@
-www.udemy.com/course/learn-by-example-apache-flink
+This is a code walkthrough of www.udemy.com/course/learn-by-example-apache-flink. I started by translating each example to Scala, stopping along the way because documentation is somewhat scarce. The same goes for replacing deprecated elements of the API.
